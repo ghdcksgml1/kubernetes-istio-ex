@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webserver-hello
+  name: webserver-hello
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webserver-hello
+  template:
+    metadata:
+      labels:
+        app: webserver-hello
+    spec:
+      containers:
+      - image: ghdcksgml1/spring-hello
+        name: webserver-hello
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: webserver-hello
+  name: webserver-hello-svc
+  annotations:
+    sidecar.istio.io/inject: "true"
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    name: webserver-hello
+  selector:
+    app: webserver-hello
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webserver-rest
+  name: webserver-rest
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webserver-rest
+  template:
+    metadata:
+      labels:
+        app: webserver-rest
+    spec:
+      containers:
+      - image: ghdcksgml1/spring-rest
+        name: webserver-rest
+        ports:
+        - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: webserver-rest
+  name: webserver-rest-svc
+  annotations:
+    sidecar.istio.io/inject: "true"
+spec:
+  ports:
+  - port: 8081
+    protocol: TCP
+    name: webserver-rest
+  selector:
+    app: webserver-rest
